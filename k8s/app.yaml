@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcp-github-agent
+  labels:
+    app: mcp-github-agent
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mcp-github-agent
+  template:
+    metadata:
+      labels:
+        app: mcp-github-agent
+    spec:
+      containers:
+        - name: api
+          image: mcp-github-agent:local
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /v1/readyz
+              port: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mcp-github-agent
+spec:
+  selector:
+    app: mcp-github-agent
+  ports:
+    - port: 80
+      targetPort: 8080
